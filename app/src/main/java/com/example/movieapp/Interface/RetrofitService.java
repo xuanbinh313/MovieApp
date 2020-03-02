@@ -1,10 +1,12 @@
 package com.example.movieapp.Interface;
 
 import com.example.movieapp.Model.MovieResponse;
+import com.example.movieapp.Model.PersonDetails;
 import com.example.movieapp.Model.PersonResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface RetrofitService {
@@ -20,4 +22,7 @@ public interface RetrofitService {
     //before that create a model for person results
     @GET("search/person")
     Call<PersonResponse> getPersonByQuery(@Query("api_key") String api_key, @Query("query") String query);
+
+    @GET("person/{person_id}")
+    Call<PersonDetails> getPersonDetailsById(@Path("person_id") int person_id, @Query("api_key") String api_key);
 }
