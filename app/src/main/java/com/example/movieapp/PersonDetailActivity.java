@@ -4,16 +4,23 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 
+import com.example.movieapp.Adapter.PersonProfileImagesAdapter;
 import com.example.movieapp.Client.RetrofitClient;
 import com.example.movieapp.Interface.RetrofitService;
 import com.example.movieapp.Model.PersonDetails;
+import com.example.movieapp.Model.PersonImages;
+import com.example.movieapp.Model.PersonImagesProfiles;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.squareup.picasso.Picasso;
 
@@ -32,6 +39,7 @@ public class PersonDetailActivity extends AppCompatActivity {
     private LinearLayoutCompat personDetailDepartmentLayout;
     private LinearLayoutCompat personDetailHomepageLayout;
     private LinearLayoutCompat personDetailBiographyLayout;
+    private LinearLayoutCompat personDetailProfileImagesLayout;
 
     private AppCompatTextView personDetailAlsoKnownAs;
     private AppCompatTextView personDetailBirthday;
@@ -42,6 +50,9 @@ public class PersonDetailActivity extends AppCompatActivity {
     private AppCompatTextView personDetailBiography;
 
     private AppCompatTextView personalDetailName;
+
+    private RecyclerView personDetailProfileImagesRecyclerView;
+    private PersonProfileImagesAdapter personProfileImagesAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +68,7 @@ public class PersonDetailActivity extends AppCompatActivity {
         personDetailDepartmentLayout = findViewById(R.id.person_detail_department_layout);
         personDetailHomepageLayout = findViewById(R.id.person_detail_homepage_layout);
         personDetailBiographyLayout = findViewById(R.id.person_detail_biography_layout);
+        personDetailProfileImagesLayout = findViewById(R.id.person_detail_profile_images_layout);
 
         personDetailAlsoKnownAs = findViewById(R.id.person_detail_also_known_as);
         personDetailBirthday = findViewById(R.id.person_detail_birthday);
@@ -68,6 +80,9 @@ public class PersonDetailActivity extends AppCompatActivity {
 
         personalDetailName = findViewById(R.id.personal_detail_name);
         personDetailProfileImageView = findViewById(R.id.person_detail_profile_image_view);
+
+        personDetailProfileImagesRecyclerView = findViewById(R.id.person_detail_profile_images_recycler_view);
+        personDetailProfileImagesRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
 
         if (intent != null && intent.getExtras() != null){
             int id = Integer.parseInt(intent.getExtras().getString("id"));
@@ -87,6 +102,32 @@ public class PersonDetailActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Call<PersonDetails> call, @NonNull Throwable t) {
                     Toast.makeText(PersonDetailActivity.this, "Any details not found", Toast.LENGTH_SHORT).show();
+                }
+            });
+            Call<PersonImages> personImagesCall = retrofitService.getPersonImagesById(id,BuildConfig.THE_MOVIE_DB_API_KEY);
+            personImagesCall.enqueue(new Callback<PersonImages>() {
+                @Override
+                public void onResponse(@NonNull Call<PersonImages> call,@NonNull Response<PersonImages> response) {
+                    PersonImages personImages = response.body();
+                    if (personImagesCall != null){
+                        List<PersonImagesProfiles> personImagesProfilesList = personImages.getProfiles();
+                        if (personImagesProfilesList != null && personImagesProfilesList.size() > 0){
+                            personDetailProfileImagesLayout.setVisibility(View.VISIBLE);
+                            personProfileImagesAdapter = new PersonProfileImagesAdapter(PersonDetailActivity.this,personImagesProfilesList);
+                            personDetailProfileImagesRecyclerView.setAdapter(personProfileImagesAdapter);
+                            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(PersonDetailActivity.this,R.anim.layout_slide_right);
+                            personDetailProfileImagesRecyclerView.setLayoutAnimation(controller);
+                            personDetailProfileImagesRecyclerView.scheduleLayoutAnimation();
+                        }
+                        else {
+                            personDetailProfileImagesLayout.setVisibility(View.GONE);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<PersonImages> call,@NonNull Throwable t) {
+
                 }
             });
         }
