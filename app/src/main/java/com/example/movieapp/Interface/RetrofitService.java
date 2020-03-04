@@ -27,6 +27,7 @@ public interface RetrofitService {
     @GET("person/{person_id}")
     Call<PersonDetails> getPersonDetailsById(@Path("person_id") int person_id, @Query("api_key") String api_key);
 
+    //http://api.themoviedb.org/3/person/{person_id}/images?api_key="API_KEY"
     @GET("person/{person_id}/images")
     Call<PersonImages> getPersonImagesById(@Path("person_id") int person_id,@Query("api_key") String api_key);
 }
