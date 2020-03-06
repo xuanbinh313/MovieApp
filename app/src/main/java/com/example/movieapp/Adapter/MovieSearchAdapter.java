@@ -1,6 +1,7 @@
 package com.example.movieapp.Adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.movieapp.Model.MovieResponseResults;
+import com.example.movieapp.MovieDetailActivity;
 import com.example.movieapp.R;
 import com.example.movieapp.ViewHolders.SearchAdapterHolder;
 
@@ -42,6 +44,16 @@ public class MovieSearchAdapter extends RecyclerView.Adapter<SearchAdapterHolder
         else {
             holder.posterTitle.setVisibility(View.GONE);
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, MovieDetailActivity.class);
+                intent.putExtra("id",String.valueOf(responseResults.getId()));
+                activity.startActivity(intent);
+                activity.overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+
+            }
+        });
     }
 
     @Override

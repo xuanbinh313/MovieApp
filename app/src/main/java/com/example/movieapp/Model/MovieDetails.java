@@ -3,7 +3,7 @@ package com.example.movieapp.Model;
 import java.util.List;
 
 public class MovieDetails {
-    private String adult;
+    private boolean adult;
     private String backdrop_path;
     private MovieDetailsBelongsToCollection belongs_to_collection;
     private Integer budget;
@@ -26,13 +26,13 @@ public class MovieDetails {
     private String tagline;
     private String title;
     private boolean video;
-    private float vote_average;
+    private Double vote_average;
     private Integer vote_count;
 
     public MovieDetails() {
     }
 
-    public MovieDetails(String adult, String backdrop_path, MovieDetailsBelongsToCollection belongs_to_collection, Integer budget, List<MovieDetailsGenres> genres, String homepage, Integer id, String imdb_id, String original_language, String original_title, String overview, Double popularity, String poster_path, List<MovieDetailsProductionCompanies> production_companies, List<MovieDetailsProductionCountries> production_countries, String release_date, Integer revenue, Integer runtime, List<MovieDetailsSpokenLanguages> spoken_languages, String status, String tagline, String title, boolean video, float vote_average, Integer vote_count) {
+    public MovieDetails(boolean adult, String backdrop_path, MovieDetailsBelongsToCollection belongs_to_collection, Integer budget, List<MovieDetailsGenres> genres, String homepage, Integer id, String imdb_id, String original_language, String original_title, String overview, Double popularity, String poster_path, List<MovieDetailsProductionCompanies> production_companies, List<MovieDetailsProductionCountries> production_countries, String release_date, Integer revenue, Integer runtime, List<MovieDetailsSpokenLanguages> spoken_languages, String status, String tagline, String title, boolean video, Double vote_average, Integer vote_count) {
         this.adult = adult;
         this.backdrop_path = backdrop_path;
         this.belongs_to_collection = belongs_to_collection;
@@ -60,11 +60,11 @@ public class MovieDetails {
         this.vote_count = vote_count;
     }
 
-    public String getAdult() {
+    public boolean getAdult() {
         return adult;
     }
 
-    public void setAdult(String adult) {
+    public void setAdult(boolean adult) {
         this.adult = adult;
     }
 
@@ -246,11 +246,11 @@ public class MovieDetails {
         this.video = video;
     }
 
-    public float getVote_average() {
+    public Double getVote_average() {
         return vote_average;
     }
 
-    public void setVote_average(float vote_average) {
+    public void setVote_average(Double vote_average) {
         this.vote_average = vote_average;
     }
 
