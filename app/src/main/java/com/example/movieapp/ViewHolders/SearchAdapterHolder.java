@@ -27,6 +27,6 @@ public class SearchAdapterHolder extends RecyclerView.ViewHolder {
     }
 
     public void setPosterImageView(Context context, String posterUrl) {
-        Picasso.with(context).load(posterUrl).into(posterImageView);
+        Picasso.with(context).load(posterUrl).into(posterImageView  );
     }
 }

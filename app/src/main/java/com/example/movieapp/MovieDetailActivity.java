@@ -4,16 +4,27 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
+import com.example.movieapp.Adapter.MovieCreditsCastAdapter;
+import com.example.movieapp.Adapter.MovieCreditsCrewAdapter;
+import com.example.movieapp.Adapter.MovieProductionCompaniesAdapter;
 import com.example.movieapp.Client.RetrofitClient;
 import com.example.movieapp.Interface.RetrofitService;
+import com.example.movieapp.Model.MovieCredits;
+import com.example.movieapp.Model.MovieCreditsCast;
+import com.example.movieapp.Model.MovieCreditsCrew;
 import com.example.movieapp.Model.MovieDetails;
 import com.example.movieapp.Model.MovieDetailsGenres;
+import com.example.movieapp.Model.MovieDetailsProductionCompanies;
 import com.example.movieapp.Model.MovieDetailsProductionCountries;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.github.lzyzsd.circleprogress.ArcProgress;
@@ -40,6 +51,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     private LinearLayoutCompat movieDetailReleaseDateLayout;
     private LinearLayoutCompat movieDetailHomepageLayout;
     private LinearLayoutCompat movieDetailOverviewLayout;
+    private LinearLayoutCompat movieDetailCastLayout;
+    private LinearLayoutCompat movieDetailCrewLayout;
+    private LinearLayoutCompat movieDetailCroductionCompanyLayout;
 
     private AppCompatTextView movieDetailOriginalTitle;
     private AppCompatTextView movieDetailOriginalLanguage;
@@ -58,6 +72,10 @@ public class MovieDetailActivity extends AppCompatActivity {
     private CircleImageView movieDetailBackDropPosterCircleImageView;
     private ArcProgress movieRatingBar;
     private AppCompatTextView movieDetailTitle;
+
+    private RecyclerView movieDetailCastRecyclerView;
+    private RecyclerView movieDetailCrewRecyclerView;
+    private RecyclerView movieDetailCroductionCompanyRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +97,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         movieDetailReleaseDateLayout = findViewById(R.id.movie_detail_release_date_layout);
         movieDetailHomepageLayout = findViewById(R.id.movie_detail_homepage_layout);
         movieDetailOverviewLayout = findViewById(R.id.movie_detail_overview_layout);
+        movieDetailCastLayout = findViewById(R.id.movie_detail_cast_layout);
+        movieDetailCrewLayout = findViewById(R.id.movie_detail_crew_layout);
+        movieDetailCroductionCompanyLayout = findViewById(R.id.movie_detail_production_company_layout);
 
         movieDetailOriginalTitle = findViewById(R.id.movie_detail_original_title);
         movieDetailOriginalLanguage = findViewById(R.id.movie_detail_original_language);
@@ -97,6 +118,13 @@ public class MovieDetailActivity extends AppCompatActivity {
         movieDetailBackDropPosterCircleImageView = findViewById(R.id.movie_detail_poster_circle_image_view);
         movieRatingBar = findViewById(R.id.movie_detail_rating_bar);
         movieDetailTitle = findViewById(R.id.movie_detail_title);
+
+        movieDetailCastRecyclerView = findViewById(R.id.movie_detail_cast_recycler_view);
+        movieDetailCastRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
+        movieDetailCrewRecyclerView = findViewById(R.id.movie_detail_crew_recycler_view);
+        movieDetailCrewRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
+        movieDetailCroductionCompanyRecyclerView = findViewById(R.id.movie_detail_production_company_recycler_view);
+        movieDetailCroductionCompanyRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
 
         if (intent != null && intent.getExtras() != null)
         {
@@ -119,6 +147,55 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                     }
                 });
+                Call<MovieCredits> movieCreditsCall = retrofitService.getMovieCreditsById(id,BuildConfig.THE_MOVIE_DB_API_KEY);
+                movieCreditsCall.enqueue(new Callback<MovieCredits>() {
+                    @Override
+                    public void onResponse(@NonNull Call<MovieCredits> call,@NonNull Response<MovieCredits> response) {
+                        MovieCredits movieCreditsResponse = response.body();
+                        if (movieCreditsResponse != null)
+                        {
+                            List<MovieCreditsCast> movieCreditsCastList = movieCreditsResponse.getMovieCreditsCast();
+                            if (movieCreditsCastList != null && movieCreditsCastList.size() > 0)
+                            {
+                                MovieCreditsCastAdapter movieCreditsCastAdapter = new MovieCreditsCastAdapter(MovieDetailActivity.this,movieCreditsCastList);
+                                movieDetailCastRecyclerView.setAdapter(movieCreditsCastAdapter);
+                                movieDetailCastRecyclerView.setVisibility(View.VISIBLE);
+                                LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
+                                movieDetailCastRecyclerView.setLayoutAnimation(controller);
+                                movieDetailCastRecyclerView.scheduleLayoutAnimation();
+                            }
+                            else
+                            {
+                                movieDetailCastRecyclerView.setVisibility(View.GONE);
+                            }
+
+                            List<MovieCreditsCrew> movieCreditsCrewList = movieCreditsResponse.getMovieCreditsCrew();
+                            if (movieCreditsCrewList != null && movieCreditsCrewList.size() > 0)
+                            {
+                                MovieCreditsCrewAdapter movieCreditsCrewAdapter = new MovieCreditsCrewAdapter(MovieDetailActivity.this,movieCreditsCrewList);
+                                movieDetailCrewRecyclerView.setAdapter(movieCreditsCrewAdapter);
+                                movieDetailCrewRecyclerView.setVisibility(View.VISIBLE);
+                                LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
+                                movieDetailCrewRecyclerView.setLayoutAnimation(controller);
+                                movieDetailCrewRecyclerView.scheduleLayoutAnimation();
+                            }
+                            else
+                            {
+                                movieDetailCrewRecyclerView.setVisibility(View.GONE);
+                            }
+                        }
+                        else
+                        {
+                            movieDetailCastRecyclerView.setVisibility(View.GONE);
+                            movieDetailCrewRecyclerView.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<MovieCredits> call,@NonNull Throwable t) {
+
+                    }
+                });
             }
         }
     }
@@ -134,8 +211,11 @@ public class MovieDetailActivity extends AppCompatActivity {
         Integer runtime = movieDetailsResponse.getRuntime();
         Integer budget = movieDetailsResponse.getBudget();
         Integer revenue = movieDetailsResponse.getRevenue();
+
         List<MovieDetailsGenres> movieDetailsGenresList = movieDetailsResponse.getGenres();
         List<MovieDetailsProductionCountries> movieDetailsProductionCountriesList = movieDetailsResponse.getProduction_countries();
+        List<MovieDetailsProductionCompanies> movieDetailsProductionCompaniesList = movieDetailsResponse.getProduction_companies();
+
         String releaseDate = movieDetailsResponse.getRelease_date();
         String homepage = movieDetailsResponse.getHomepage();
         String overview = movieDetailsResponse.getOverview();
@@ -355,6 +435,20 @@ public class MovieDetailActivity extends AppCompatActivity {
         else
         {
             movieDetailHomepageLayout.setVisibility(View.GONE);
+        }
+
+        if (movieDetailsProductionCompaniesList != null && movieDetailsProductionCompaniesList.size() > 0)
+        {
+            MovieProductionCompaniesAdapter movieProductionCompaniesAdapter = new MovieProductionCompaniesAdapter(MovieDetailActivity.this,movieDetailsProductionCompaniesList);
+            movieDetailCroductionCompanyRecyclerView.setAdapter(movieProductionCompaniesAdapter);
+            movieDetailCroductionCompanyRecyclerView.setVisibility(View.VISIBLE);
+//            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
+//            movieDetailCroductionCompanyRecyclerView.setLayoutAnimation(controller);
+//            movieDetailCroductionCompanyRecyclerView.scheduleLayoutAnimation();
+        }
+        else
+        {
+            movieDetailCroductionCompanyRecyclerView.setVisibility(View.GONE);
         }
     }
 

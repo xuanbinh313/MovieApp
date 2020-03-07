@@ -1,5 +1,6 @@
 package com.example.movieapp.Interface;
 
+import com.example.movieapp.Model.MovieCredits;
 import com.example.movieapp.Model.MovieDetails;
 import com.example.movieapp.Model.MovieResponse;
 import com.example.movieapp.Model.PersonDetails;
@@ -34,4 +35,7 @@ public interface RetrofitService {
 
     @GET("movie/{movie_id}")
     Call<MovieDetails> getMovieDetailsById(@Path("movie_id") int movie_id, @Query("api_key") String api_key);
+
+    @GET("movie/{movie_id}/credits")
+    Call<MovieCredits> getMovieCreditsById(@Query("movie_id") int movie_id, @Query("api_key") String api_key);
 }
