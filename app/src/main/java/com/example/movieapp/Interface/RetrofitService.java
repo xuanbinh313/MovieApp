@@ -2,7 +2,10 @@ package com.example.movieapp.Interface;
 
 import com.example.movieapp.Model.MovieCredits;
 import com.example.movieapp.Model.MovieDetails;
+import com.example.movieapp.Model.MovieImages;
+import com.example.movieapp.Model.MovieImagesBackDropsAndPosters;
 import com.example.movieapp.Model.MovieResponse;
+import com.example.movieapp.Model.MovieVideos;
 import com.example.movieapp.Model.PersonDetails;
 import com.example.movieapp.Model.PersonImages;
 import com.example.movieapp.Model.PersonResponse;
@@ -37,5 +40,11 @@ public interface RetrofitService {
     Call<MovieDetails> getMovieDetailsById(@Path("movie_id") int movie_id, @Query("api_key") String api_key);
 
     @GET("movie/{movie_id}/credits")
-    Call<MovieCredits> getMovieCreditsById(@Query("movie_id") int movie_id, @Query("api_key") String api_key);
+    Call<MovieCredits> getMovieCreditsById(@Path("movie_id") int movie_id, @Query("api_key") String api_key);
+
+    @GET("movie/{movie_id}/images")
+    Call<MovieImages> getMovieImagesById(@Path("movie_id") int movie_id, @Query("api_key") String api_key);
+
+    @GET("movie/{movie_id}/videos")
+    Call<MovieVideos> getMovieVideosById(@Path("movie_id") int movie_id, @Query("api_key") String api_key);
 }

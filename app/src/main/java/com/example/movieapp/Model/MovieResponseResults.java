@@ -2,7 +2,8 @@ package com.example.movieapp.Model;
 
 import java.util.List;
 
-public class MovieResponseResults {
+public class MovieResponseResults
+{
     private float popularity;
     private int id;
     private boolean video;

@@ -9,13 +9,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
 import com.example.movieapp.Adapter.MovieCreditsCastAdapter;
 import com.example.movieapp.Adapter.MovieCreditsCrewAdapter;
+import com.example.movieapp.Adapter.MoviePostersImagesAdapter;
 import com.example.movieapp.Adapter.MovieProductionCompaniesAdapter;
 import com.example.movieapp.Client.RetrofitClient;
 import com.example.movieapp.Interface.RetrofitService;
@@ -26,10 +26,13 @@ import com.example.movieapp.Model.MovieDetails;
 import com.example.movieapp.Model.MovieDetailsGenres;
 import com.example.movieapp.Model.MovieDetailsProductionCompanies;
 import com.example.movieapp.Model.MovieDetailsProductionCountries;
+import com.example.movieapp.Model.MovieImages;
+import com.example.movieapp.Model.MovieImagesBackDropsAndPosters;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -53,7 +56,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     private LinearLayoutCompat movieDetailOverviewLayout;
     private LinearLayoutCompat movieDetailCastLayout;
     private LinearLayoutCompat movieDetailCrewLayout;
-    private LinearLayoutCompat movieDetailCroductionCompanyLayout;
+    private LinearLayoutCompat movieDetailProductionCompanyLayout;
+    private LinearLayoutCompat movieDetailImagesLayout;
+    private LinearLayoutCompat movieDetailVideosLayout;
 
     private AppCompatTextView movieDetailOriginalTitle;
     private AppCompatTextView movieDetailOriginalLanguage;
@@ -75,7 +80,9 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private RecyclerView movieDetailCastRecyclerView;
     private RecyclerView movieDetailCrewRecyclerView;
-    private RecyclerView movieDetailCroductionCompanyRecyclerView;
+    private RecyclerView movieDetailProductionCompanyRecyclerView;
+    private RecyclerView movieDetailImagesRecyclerView;
+    private RecyclerView movieDetailVideosRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +106,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         movieDetailOverviewLayout = findViewById(R.id.movie_detail_overview_layout);
         movieDetailCastLayout = findViewById(R.id.movie_detail_cast_layout);
         movieDetailCrewLayout = findViewById(R.id.movie_detail_crew_layout);
-        movieDetailCroductionCompanyLayout = findViewById(R.id.movie_detail_production_company_layout);
+        movieDetailProductionCompanyLayout = findViewById(R.id.movie_detail_production_company_layout);
+        movieDetailImagesLayout = findViewById(R.id.movie_detail_images_layout);
+        movieDetailVideosLayout = findViewById(R.id.movie_detail_videos_layout);
+
 
         movieDetailOriginalTitle = findViewById(R.id.movie_detail_original_title);
         movieDetailOriginalLanguage = findViewById(R.id.movie_detail_original_language);
@@ -123,14 +133,19 @@ public class MovieDetailActivity extends AppCompatActivity {
         movieDetailCastRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
         movieDetailCrewRecyclerView = findViewById(R.id.movie_detail_crew_recycler_view);
         movieDetailCrewRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
-        movieDetailCroductionCompanyRecyclerView = findViewById(R.id.movie_detail_production_company_recycler_view);
-        movieDetailCroductionCompanyRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
+        movieDetailProductionCompanyRecyclerView = findViewById(R.id.movie_detail_production_company_recycler_view);
+        movieDetailProductionCompanyRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
+        movieDetailImagesRecyclerView = findViewById(R.id.movie_detail_images_recycler_view);
+        movieDetailImagesRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
+        movieDetailVideosRecyclerView = findViewById(R.id.movie_detail_videos_recycler_view);
+        movieDetailVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false));
 
         if (intent != null && intent.getExtras() != null)
         {
             if (intent.getExtras().getString("id") != null)
             {
                 int id = Integer.parseInt(intent.getExtras().getString("id"));
+
                 Call<MovieDetails> movieDetailsCall = retrofitService.getMovieDetailsById(id,BuildConfig.THE_MOVIE_DB_API_KEY);
                 movieDetailsCall.enqueue(new Callback<MovieDetails>() {
                     @Override
@@ -154,45 +169,97 @@ public class MovieDetailActivity extends AppCompatActivity {
                         MovieCredits movieCreditsResponse = response.body();
                         if (movieCreditsResponse != null)
                         {
-                            List<MovieCreditsCast> movieCreditsCastList = movieCreditsResponse.getMovieCreditsCast();
+                            List<MovieCreditsCast> movieCreditsCastList = movieCreditsResponse.getCast();
                             if (movieCreditsCastList != null && movieCreditsCastList.size() > 0)
                             {
                                 MovieCreditsCastAdapter movieCreditsCastAdapter = new MovieCreditsCastAdapter(MovieDetailActivity.this,movieCreditsCastList);
                                 movieDetailCastRecyclerView.setAdapter(movieCreditsCastAdapter);
-                                movieDetailCastRecyclerView.setVisibility(View.VISIBLE);
-                                LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
-                                movieDetailCastRecyclerView.setLayoutAnimation(controller);
-                                movieDetailCastRecyclerView.scheduleLayoutAnimation();
+                                movieDetailCastLayout.setVisibility(View.VISIBLE);
+//                                LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
+//                                movieDetailCastRecyclerView.setLayoutAnimation(controller);
+//                                movieDetailCastRecyclerView.scheduleLayoutAnimation();
                             }
                             else
                             {
-                                movieDetailCastRecyclerView.setVisibility(View.GONE);
+                                movieDetailCastLayout.setVisibility(View.GONE);
                             }
 
-                            List<MovieCreditsCrew> movieCreditsCrewList = movieCreditsResponse.getMovieCreditsCrew();
+                            List<MovieCreditsCrew> movieCreditsCrewList = movieCreditsResponse.getCrew();
                             if (movieCreditsCrewList != null && movieCreditsCrewList.size() > 0)
                             {
                                 MovieCreditsCrewAdapter movieCreditsCrewAdapter = new MovieCreditsCrewAdapter(MovieDetailActivity.this,movieCreditsCrewList);
                                 movieDetailCrewRecyclerView.setAdapter(movieCreditsCrewAdapter);
-                                movieDetailCrewRecyclerView.setVisibility(View.VISIBLE);
-                                LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
-                                movieDetailCrewRecyclerView.setLayoutAnimation(controller);
-                                movieDetailCrewRecyclerView.scheduleLayoutAnimation();
+                                movieDetailCrewLayout.setVisibility(View.VISIBLE);
+//                                LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
+//                                movieDetailCrewRecyclerView.setLayoutAnimation(controller);
+//                                movieDetailCrewRecyclerView.scheduleLayoutAnimation();
                             }
                             else
                             {
-                                movieDetailCrewRecyclerView.setVisibility(View.GONE);
+                                movieDetailCrewLayout.setVisibility(View.GONE);
                             }
                         }
                         else
                         {
-                            movieDetailCastRecyclerView.setVisibility(View.GONE);
-                            movieDetailCrewRecyclerView.setVisibility(View.GONE);
+                            movieDetailCastLayout.setVisibility(View.GONE);
+                            movieDetailCrewLayout.setVisibility(View.GONE);
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<MovieCredits> call,@NonNull Throwable t) {
+
+                    }
+                });
+
+                Call<MovieImages> movieImagesCall = retrofitService.getMovieImagesById(id,BuildConfig.THE_MOVIE_DB_API_KEY);
+                movieImagesCall.enqueue(new Callback<MovieImages>()
+                {
+                    @Override
+                    public void onResponse(@NonNull Call<MovieImages> call,@NonNull Response<MovieImages> response)
+                    {
+                        MovieImages movieImages = response.body();
+                        if (movieImages != null)
+                        {
+                            ArrayList<MovieImagesBackDropsAndPosters> movieImagesBackDropsAndPostersArrayList = new ArrayList<>();
+                            List<MovieImagesBackDropsAndPosters> movieImagesBackDropsList = movieImages.getBackdrops();
+                            List<MovieImagesBackDropsAndPosters> movieImagesPostersList = movieImages.getPosters();
+                            if (movieImagesBackDropsList != null && movieImagesBackDropsList.size() > 0)
+                            {
+                                if (movieImagesPostersList != null & movieImagesPostersList.size()> 0)
+                                {
+                                    movieImagesBackDropsAndPostersArrayList.addAll(movieImagesBackDropsList);
+                                    movieImagesBackDropsAndPostersArrayList.addAll(movieImagesPostersList);
+                                }
+                                else
+                                {
+                                    movieImagesBackDropsAndPostersArrayList.addAll(movieImagesPostersList);
+                                }
+                            }
+                            else if (movieImagesPostersList != null & movieImagesPostersList.size() > 0)
+                            {
+                                movieImagesBackDropsAndPostersArrayList.addAll(movieImagesPostersList);
+                            }
+                            else
+                            {
+                                movieImagesBackDropsAndPostersArrayList.clear();
+                                movieDetailImagesLayout.setVisibility(View.GONE);
+                            }
+                            if (movieImagesBackDropsAndPostersArrayList.size() > 0)
+                            {
+                                MoviePostersImagesAdapter moviePostersImagesAdapter = new MoviePostersImagesAdapter(MovieDetailActivity.this,movieImagesBackDropsAndPostersArrayList);
+                                movieDetailImagesRecyclerView.setAdapter(moviePostersImagesAdapter);
+                                movieDetailPosterImageView.setVisibility(View.VISIBLE);
+//                                LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
+//                                movieDetailImagesRecyclerView.setLayoutAnimation(controller);
+//                                movieDetailImagesRecyclerView.scheduleLayoutAnimation();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<MovieImages> call,@NonNull Throwable t)
+                    {
 
                     }
                 });
@@ -424,7 +491,6 @@ public class MovieDetailActivity extends AppCompatActivity {
             if (homepage.length() > 0)
             {
                 movieDetailHomepage.setText(homepage);
-                Log.d("AAA",homepage);
                 movieDetailHomepageLayout.setVisibility(View.VISIBLE);
             }
             else
@@ -440,15 +506,15 @@ public class MovieDetailActivity extends AppCompatActivity {
         if (movieDetailsProductionCompaniesList != null && movieDetailsProductionCompaniesList.size() > 0)
         {
             MovieProductionCompaniesAdapter movieProductionCompaniesAdapter = new MovieProductionCompaniesAdapter(MovieDetailActivity.this,movieDetailsProductionCompaniesList);
-            movieDetailCroductionCompanyRecyclerView.setAdapter(movieProductionCompaniesAdapter);
-            movieDetailCroductionCompanyRecyclerView.setVisibility(View.VISIBLE);
+            movieDetailProductionCompanyRecyclerView.setAdapter(movieProductionCompaniesAdapter);
+            movieDetailProductionCompanyLayout.setVisibility(View.VISIBLE);
 //            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
-//            movieDetailCroductionCompanyRecyclerView.setLayoutAnimation(controller);
-//            movieDetailCroductionCompanyRecyclerView.scheduleLayoutAnimation();
+//            movieDetailProductionCompanyRecyclerView.setLayoutAnimation(controller);
+//            movieDetailProductionCompanyRecyclerView.scheduleLayoutAnimation();
         }
         else
         {
-            movieDetailCroductionCompanyRecyclerView.setVisibility(View.GONE);
+            movieDetailProductionCompanyLayout.setVisibility(View.GONE);
         }
     }
 

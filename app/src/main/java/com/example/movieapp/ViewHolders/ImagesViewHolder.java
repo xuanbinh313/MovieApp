@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.movieapp.R;
 import com.squareup.picasso.Picasso;
 
-public class PersonProfileImagesViewHolder extends RecyclerView.ViewHolder {
+public class ImagesViewHolder extends RecyclerView.ViewHolder {
     public AppCompatImageView profileImage;
-    public PersonProfileImagesViewHolder(@NonNull View itemView) {
+    public ImagesViewHolder(@NonNull View itemView) {
         super(itemView);
         profileImage = itemView.findViewById(R.id.profile_image);
     }

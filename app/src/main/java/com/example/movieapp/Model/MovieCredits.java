@@ -5,16 +5,16 @@ import java.util.List;
 public class MovieCredits
 {
     private Integer id;
-    private List<MovieCreditsCast> movieCreditsCast;
-    private List<MovieCreditsCrew> movieCreditsCrew;
+    private List<MovieCreditsCast> cast;
+    private List<MovieCreditsCrew> crew;
 
     public MovieCredits() {
     }
 
-    public MovieCredits(Integer id, List<MovieCreditsCast> movieCreditsCast, List<MovieCreditsCrew> movieCreditsCrew) {
+    public MovieCredits(Integer id, List<MovieCreditsCast> cast, List<MovieCreditsCrew> crew) {
         this.id = id;
-        this.movieCreditsCast = movieCreditsCast;
-        this.movieCreditsCrew = movieCreditsCrew;
+        this.cast = cast;
+        this.crew = crew;
     }
 
     public Integer getId() {
@@ -25,19 +25,19 @@ public class MovieCredits
         this.id = id;
     }
 
-    public List<MovieCreditsCast> getMovieCreditsCast() {
-        return movieCreditsCast;
+    public List<MovieCreditsCast> getCast() {
+        return cast;
     }
 
-    public void setMovieCreditsCast(List<MovieCreditsCast> movieCreditsCast) {
-        this.movieCreditsCast = movieCreditsCast;
+    public void setCast(List<MovieCreditsCast> cast) {
+        this.cast = cast;
     }
 
-    public List<MovieCreditsCrew> getMovieCreditsCrew() {
-        return movieCreditsCrew;
+    public List<MovieCreditsCrew> getCrew() {
+        return crew;
     }
 
-    public void setMovieCreditsCrew(List<MovieCreditsCrew> movieCreditsCrew) {
-        this.movieCreditsCrew = movieCreditsCrew;
+    public void setCrew(List<MovieCreditsCrew> crew) {
+        this.crew = crew;
     }
 }
