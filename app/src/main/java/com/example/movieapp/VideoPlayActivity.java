@@ -1,5 +1,6 @@
 package com.example.movieapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.lifecycle.Lifecycle;
@@ -18,6 +19,7 @@ import com.codewaves.youtubethumbnailview.ThumbnailLoader;
 import com.codewaves.youtubethumbnailview.ThumbnailView;
 import com.example.movieapp.Model.MovieVideosResults;
 import com.example.movieapp.Utils.FullScreenHelper;
+import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
@@ -27,8 +29,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 
 import java.util.ArrayList;
 
-public class VideoPlayActivity extends AppCompatActivity
-{
+public class VideoPlayActivity extends AppCompatActivity {
     private ThumbnailView thumbnailView;
     private YouTubePlayerView playerView;
     private ProgressBar progressBar;
@@ -36,8 +37,7 @@ public class VideoPlayActivity extends AppCompatActivity
     private FullScreenHelper fullScreenHelper;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_play);
 
@@ -50,7 +50,7 @@ public class VideoPlayActivity extends AppCompatActivity
         AppCompatTextView noResultsFound = findViewById(R.id.no_result_found);
 
         otherVideosRecyclerView = findViewById(R.id.other_videos_recycler_view);
-        otherVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
+        otherVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
         progressBar = findViewById(R.id.progress_bar);
         progressBar.getIndeterminateDrawable().setColorFilter(0XFFFFFFFF, PorterDuff.Mode.MULTIPLY);
@@ -65,33 +65,39 @@ public class VideoPlayActivity extends AppCompatActivity
             {
                 String videoId = movieVideosResultsArrayList.get(position).getKey();
                 String title = movieVideosResultsArrayList.get(position).getName();
-                if (title != null)
-                {
+                if (title != null) {
                     videoTitle.setText(title);
                 }
 
-                if (videoId != null)
-                {
+                if (videoId != null) {
                     String baseUrl = "https://www.youtube.com/watch?v=";
                     thumbnailView.loadThumbnail(baseUrl + videoId);
-                    playerView.initialize(new AbstractYouTubePlayerListener() {
+                    playerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
                         @Override
-                        public void onReady(YouTubePlayer youTubePlayer) {
-                            super.onReady(youTubePlayer);
-                            // when video is ready to play hide the thumbnail and progress bar
+                        public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+                            //When video is ready to play hide the thumbnail and progress bar
                             thumbnailView.setVisibility(View.GONE);
                             progressBar.setVisibility(View.GONE);
-                            //show the youtube player
-
+                            //show the youtube player view
                             playerView.setVisibility(View.VISIBLE);
-                            if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
-                            {
-                                youTubePlayer.loadVideo(videoId,0);
+                            if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+                                youTubePlayer.loadVideo(videoId, 0);
+                            } else {
+                                youTubePlayer.cueVideo(videoId, 0);
                             }
-                            else
-                            {
-                                youTubePlayer.cueVideo(videoId,0);
-                            }
+                        }
+                    });
+                    playerView.addFullScreenListener(new YouTubePlayerFullScreenListener() {
+                        @Override
+                        public void onYouTubePlayerEnterFullScreen() {
+                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                            fullScreenHelper.enterFullScreen();
+                        }
+
+                        @Override
+                        public void onYouTubePlayerExitFullScreen() {
+                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                            fullScreenHelper.enterFullScreen();
                         }
                     });
                 }

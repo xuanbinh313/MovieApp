@@ -224,6 +224,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                             ArrayList<MovieImagesBackDropsAndPosters> movieImagesBackDropsAndPostersArrayList = new ArrayList<>();
                             List<MovieImagesBackDropsAndPosters> movieImagesBackDropsList = movieImages.getBackdrops();
                             List<MovieImagesBackDropsAndPosters> movieImagesPostersList = movieImages.getPosters();
+
                             if (movieImagesBackDropsList != null && movieImagesBackDropsList.size() > 0)
                             {
                                 if (movieImagesPostersList != null & movieImagesPostersList.size()> 0)
@@ -233,7 +234,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                                 }
                                 else
                                 {
-                                    movieImagesBackDropsAndPostersArrayList.addAll(movieImagesPostersList);
+                                    movieImagesBackDropsAndPostersArrayList.addAll(movieImagesBackDropsList);
                                 }
                             }
                             else if (movieImagesPostersList != null & movieImagesPostersList.size() > 0)
@@ -249,7 +250,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                             {
                                 MoviePostersImagesAdapter moviePostersImagesAdapter = new MoviePostersImagesAdapter(MovieDetailActivity.this,movieImagesBackDropsAndPostersArrayList);
                                 movieDetailImagesRecyclerView.setAdapter(moviePostersImagesAdapter);
-                                movieDetailPosterImageView.setVisibility(View.VISIBLE);
+                                movieDetailImagesLayout.setVisibility(View.VISIBLE);
 //                                LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MovieDetailActivity.this,R.anim.slide_from_right);
 //                                movieDetailImagesRecyclerView.setLayoutAnimation(controller);
 //                                movieDetailImagesRecyclerView.scheduleLayoutAnimation();
