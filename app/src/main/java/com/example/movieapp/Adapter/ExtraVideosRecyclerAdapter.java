@@ -19,12 +19,11 @@ import com.example.movieapp.ViewHolders.MovieVideosViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieVideosAdapter extends RecyclerView.Adapter<MovieVideosViewHolder>
-{
+public class ExtraVideosRecyclerAdapter extends RecyclerView.Adapter<MovieVideosViewHolder> {
     private Activity activity;
     private List<MovieVideosResults> movieVideosResultsList;
 
-    public MovieVideosAdapter(Activity activity, List<MovieVideosResults> movieVideosResultsList) {
+    public ExtraVideosRecyclerAdapter(Activity activity, List<MovieVideosResults> movieVideosResultsList) {
         this.activity = activity;
         this.movieVideosResultsList = movieVideosResultsList;
     }
@@ -68,3 +67,4 @@ public class MovieVideosAdapter extends RecyclerView.Adapter<MovieVideosViewHold
         return movieVideosResultsList.size();
     }
 }
+
